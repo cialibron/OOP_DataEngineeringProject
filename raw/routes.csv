@@ -1,1 +1,16 @@
-
+route_id,route_name,origin,destination,distance_km,expected_duration_min
+R01,Downtown Express,Central Station,North Hub,18.5,45
+R02,Crosstown Shuttle,East Mall,West Tech Park,24.0,60
+R03,Airport Connector,Central Station,Airport Terminal 1,32.0,50
+R04,University Line,South Metro,State University,12.2,30
+R05,Harbor Commuter,Port Terminal,Central Station,15.0,35
+R06,Westside Feeder,West Tech Park,Suburban Ring,8.5,20
+R07,Night Owl Circulator,Downtown Core,City Limits,28.0,55
+R08,Medical Center Direct,North Hub,General Hospital,10.4,25
+R09,Tech Corridor,East Mall,Innovation Park,16.8,40
+R10,Southside Local,South Metro,Old Town,9.2,22
+R11,Riverfront Shuttle,Port Terminal,Cultural Center,6.5,15
+R12,Metro Loop,Central Station,Central Station,22.1,50
+R13,Suburb Rapid,City Limits,North Hub,35.5,65
+R14,Campus Express,State University,Innovation Park,11.0,28
+R15,Stadium Shuttle,Cultural Center,Sports Arena,7.8,18
