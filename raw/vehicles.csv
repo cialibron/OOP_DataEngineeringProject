@@ -1,1 +1,16 @@
-
+vehicle_id,license_plate,model,capacity,status,manufacture_year
+V101,BUS-7890,Volvo B7R,50,Active,2019
+V102,BUS-7891,Volvo B7R,50,Active,2020
+V103,BUS-4521,BYD K9,40,Under Maintenance,2021
+V104,BUS-1209,Scania K320,60,Active,2018
+V105,BUS-3310,BYD K9,40,Active,2022
+V106,BUS-5542,Volvo B7R,50,Active,2021
+V107,BUS-8812,Scania K320,60,Active,2019
+V108,BUS-9901,Mercedes Citaro,55,Out of Service,2017
+V109,BUS-2234,BYD K9,40,Active,2023
+V110,BUS-6678,Volvo B7R,50,Active,2020
+V111,BUS-1123,Scania K320,60,Active,2021
+V112,BUS-4455,Mercedes Citaro,55,Active,2022
+V113,BUS-7788,BYD K9,40,Under Maintenance,2020
+V114,BUS-3344,Volvo B7R,50,Active,2023
+V115,BUS-9988,Scania K320,60,Active,2019
