@@ -55,116 +55,12 @@ A city government is building a unified data platform for public transportation 
 
 ## 🧩 Task 2 — Entity Relationship Diagram
 
-```mermaid
-erDiagram
-    ROUTES ||--o{ TRIPS : "route_id"
-    VEHICLES ||--o{ TRIPS : "vehicle_id"
-    VEHICLES ||--o{ MAINTENANCE : "vehicle_id"
-    TRIPS ||--o{ PASSENGER_TRANSACTIONS : "trip_id"
+<img width="604" height="285" alt="Screenshot 2026-09-11 181543" src="https://github.com/user-attachments/assets/ee4809e7-86c7-459d-a5a8-f6410032be46" />
 
-    ROUTES {
-        string route_id PK
-        string route_name
-        string origin
-        string destination
-        float distance_km
-        int expected_duration_min
-    }
-    VEHICLES {
-        string vehicle_id PK
-        string license_plate
-        string model
-        int capacity
-        string status
-        int manufacture_year
-    }
-    TRIPS {
-        string trip_id PK
-        string route_id FK
-        string vehicle_id FK
-        datetime scheduled_start_time
-        datetime actual_start_time
-        datetime actual_end_time
-        string status
-    }
-    PASSENGER_TRANSACTIONS {
-        string transaction_id PK
-        string trip_id FK
-        string card_id
-        datetime tap_timestamp
-        float fare_amount
-        string payment_method
-    }
-    MAINTENANCE {
-        string maintenance_id PK
-        string vehicle_id FK
-        date service_date
-        string issue_type
-        string description
-        float cost
-        string status
-    }
-```
+## 📐 Task 3 — Design the Source Schema
 
-`ROUTES` and `VEHICLES` each feed **one-to-many** into `TRIPS`; `TRIPS` feeds **one-to-many** into `PASSENGER_TRANSACTIONS`; `VEHICLES` feeds **one-to-many** into `MAINTENANCE`.
+<img width="571" height="340" alt="Screenshot 2026-09-11 181552" src="https://github.com/user-attachments/assets/3587d62c-1a84-44f5-bdf1-670999553712" />
 
----
-
-## 📐 Task 3 — Data Dictionary
-
-### `routes.csv`
-| Field | Type | Description |
-|---|---|---|
-| `route_id` | string (PK) | Unique route identifier |
-| `route_name` | string | Name of the route |
-| `origin` | string | Starting point |
-| `destination` | string | End point |
-| `distance_km` | float | Route distance in kilometers |
-| `expected_duration_min` | int | Expected travel duration in minutes |
-
-### `vehicles.csv`
-| Field | Type | Description |
-|---|---|---|
-| `vehicle_id` | string (PK) | Unique vehicle identifier |
-| `license_plate` | string | Vehicle plate number |
-| `model` | string | Vehicle make/model |
-| `capacity` | int | Passenger capacity |
-| `status` | string | Active / Under Maintenance / Out of Service |
-| `manufacture_year` | int | Year the vehicle was manufactured |
-
-### `trips.csv`
-| Field | Type | Description |
-|---|---|---|
-| `trip_id` | string (PK) | Unique trip identifier |
-| `route_id` | string (FK → routes) | Assigned route |
-| `vehicle_id` | string (FK → vehicles) | Assigned vehicle |
-| `scheduled_start_time` | datetime | Planned departure time |
-| `actual_start_time` | datetime | Actual departure time (blank if cancelled) |
-| `actual_end_time` | datetime | Actual arrival time (blank if cancelled) |
-| `status` | string | Completed / Cancelled / etc. |
-
-### `passenger_transactions.csv`
-| Field | Type | Description |
-|---|---|---|
-| `transaction_id` | string (PK) | Unique transaction identifier |
-| `trip_id` | string (FK → trips) | Related trip |
-| `card_id` | string | Passenger's fare card / token ID |
-| `tap_timestamp` | datetime | Time the fare was tapped |
-| `fare_amount` | float | Fare paid |
-| `payment_method` | string | SmartCard / Contactless Credit / Mobile Pay / etc. |
-
-### `maintenance.csv`
-| Field | Type | Description |
-|---|---|---|
-| `maintenance_id` | string (PK) | Unique maintenance record identifier |
-| `vehicle_id` | string (FK → vehicles) | Vehicle serviced |
-| `service_date` | date | Date of service |
-| `issue_type` | string | Category of the issue (Engine, Brakes, Electrical, etc.) |
-| `description` | string | Free-text description of the work |
-| `cost` | float | Cost of the service |
-| `status` | string | Completed / In Progress / Open |
-
----
 
 ## 🔑 Task 4 — Primary & Foreign Keys
 
@@ -295,19 +191,19 @@ flowchart LR
 ## 💭 Short Reflection
 
 **1. Why is it important for a Data Engineer to understand the business scenario before writing the pipeline?**
-Without knowing what questions the Transportation Office eventually wants answered — route demand, vehicle utilization, delays, maintenance trends, fare revenue — it's easy to design a schema or pick identifiers that don't actually support those questions later. Understanding the scenario first shapes which fields matter, which keys need to stay consistent, and where data quality will matter most.
+It is incredibly important for a Data Engineer to understand the business scenario before writing the pipeline, because if the Data Engineer does not know what he is building the pipeline for, there may be business logic errors. This means that yes, the code runs, but the ingested and staged data is not prepared for the business to answer its problems or questions.
 
 **2. Why should raw data be preserved instead of immediately modifying the original files?**
-Raw data is the only unbiased record of what the source systems actually produced. If it's edited in place, there's no way to go back and check whether a downstream problem was caused by a transformation bug or by the source itself. Keeping `raw/` untouched means every later layer can be re-derived and re-checked against ground truth.
+Raw data should be preserved because if we directly modify the original files, a mistake could cause all the original data to be modified or deleted. This could then affect the output of Data Scientists and Analysts, causing them to give incorrect business solutions and predictions.
 
 **3. What is the purpose of a staging layer?**
-Staging is a safe, ingested checkpoint between raw files and any real transformation or integration work. It confirms the data was successfully read and structurally sound before anything gets cleaned, joined, or reshaped — so problems get caught early, in isolation, one source at a time.
+From what I understand, staging is a safe, ingested checkpoint between the raw files and any real transformation work. It helps confirm if the data was successfully read and structurally correct before anything gets cleaned, joined, or reshaped. This helps by spotting problems in the raw data early and provides a safe space to experiment with cleaning or transforming the data.
 
 **4. Which field or relationship in your scenario is likely to be the most important when the datasets are eventually integrated?**
-`vehicle_id`, since it connects three of the five sources — Vehicle Registry, Trip Operations, and Maintenance System. It's the join key behind almost every future business question involving utilization and maintenance patterns, so its consistency matters more than any other identifier.
+`vehicle_id`, since it connects three of the five sources — Vehicle Registry, Trip Operations, and Maintenance System. It's the key that helps with questions about utilization and maintenance patterns, so its consistency matters a lot.
 
 **5. What potential problem do you expect when you eventually combine your five source systems?**
-Referential integrity gaps — a `trip_id` in `passenger_transactions` or a `vehicle_id` in `maintenance` that doesn't exist (or no longer exists) in its parent source. Cancelled trips (like `T1008`, with blank `actual_start_time`/`actual_end_time`) are also a likely source of nulls that will need explicit handling once trips and transactions are joined.
+A potential problem I would expect when combining is inconsistent content within fields. For example, in the status field, instead of active or inactive, there are redundant records that use different terms that could have the same meaning as active or inactive.
 
 ---
 
