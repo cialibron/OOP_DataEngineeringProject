@@ -176,8 +176,6 @@ erDiagram
 | `passenger_transactions` | `transaction_id` | `trip_id` → trips | Many transactions → one trip |
 | `maintenance` | `maintenance_id` | `vehicle_id` → vehicles | Many maintenance records → one vehicle |
 
-**Guide question — what happens if a foreign key contains a value that doesn't exist in its parent source?**
-That row becomes an **orphaned record**. A join against the parent table would silently drop it (inner join) or produce a null-filled row (left/outer join), meaning a trip, transaction, or maintenance record could be excluded from downstream analysis — or worse, mis-attributed — without an obvious error. This is exactly why raw and staging copies are preserved untouched: it lets us detect and investigate orphaned foreign keys later without having already lost or altered the original evidence.
 
 ---
 
