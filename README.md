@@ -203,7 +203,7 @@ From what I understand, staging is a safe, ingested checkpoint between the raw f
 `vehicle_id`, since it connects three of the five sources — Vehicle Registry, Trip Operations, and Maintenance System. It's the key that helps with questions about utilization and maintenance patterns, so its consistency matters a lot.
 
 **5. What potential problem do you expect when you eventually combine your five source systems?**
-A potential problem I would expect when combining is inconsistent content within fields. For example, in the status field, instead of active or inactive, there are redundant records that use different terms that could have the same meaning as active or inactive.
+A potential problem I would expect when combining is inconsistent and missing content within fields. For example, the fields that need datetime data types have str, so that needs to be fixed. There are also missing values for the start and end times, which need to be investigated.
 
 ---
 
