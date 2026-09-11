@@ -1,4 +1,4 @@
-# 🚌 City Transportation Data Platform
+# City Transportation Data Platform
 
 **Data Engineer Track — Midterm Activity 1 — Phase 1**
 **Author:** Libron, Christian Isaac Andas
@@ -6,7 +6,7 @@
 
 ---
 
-## 📌 Task 1 — Business Scenario
+## Task 1 — Business Scenario
 
 A city government is building a unified data platform for public transportation operations. Data currently lives in five separate operational systems — vehicles, routes, trips, passenger transactions, and maintenance — with no way to analyze them together. The Transportation Office ultimately wants to answer questions about passenger demand, vehicle utilization, delays, maintenance needs, and fare revenue.
 
@@ -23,7 +23,7 @@ A city government is building a unified data platform for public transportation 
 
 ---
 
-## 🎯 Phase 1 Objectives
+## Phase 1 Objectives
 
 - Understand the business problem and identify the operational source systems
 - Identify entities, identifiers, and relationships among the systems
@@ -36,7 +36,7 @@ A city government is building a unified data platform for public transportation 
 
 ---
 
-## 🗂️ Source Systems
+## Source Systems
 
 | Source System | Purpose | Main Identifier | Related System(s) |
 |---|---|---|---|
@@ -53,16 +53,16 @@ A city government is building a unified data platform for public transportation 
 
 ---
 
-## 🧩 Task 2 — Entity Relationship Diagram
+## Task 2 — Entity Relationship Diagram
 
 <img width="604" height="285" alt="Screenshot 2026-09-11 181543" src="https://github.com/user-attachments/assets/ee4809e7-86c7-459d-a5a8-f6410032be46" />
 
-## 📐 Task 3 — Design the Source Schema
+## Task 3 — Design the Source Schema
 
 <img width="571" height="340" alt="Screenshot 2026-09-11 181552" src="https://github.com/user-attachments/assets/3587d62c-1a84-44f5-bdf1-670999553712" />
 
 
-## 🔑 Task 4 — Primary & Foreign Keys
+## Task 4 — Primary & Foreign Keys
 
 | Source | Primary Key | Foreign Key(s) | Relationship |
 |---|---|---|---|
@@ -75,13 +75,13 @@ A city government is building a unified data platform for public transportation 
 
 ---
 
-## 🧾 Task 5 — Raw Data
+## Task 5 — Raw Data
 
 Approximately 15 realistic records were created per source (~75 raw records total) in `raw/*.csv`, with identifiers kept consistent across sources so relationships can be tested once integration begins.
 
 ---
 
-## 📁 Task 6 — Project Structure
+## Task 6 — Project Structure
 
 ```
 OOP_DataEngineeringProject/
@@ -105,7 +105,7 @@ OOP_DataEngineeringProject/
 
 ---
 
-## 🐍 Task 7 — Ingestion Notebook
+## Task 7 — Ingestion Notebook
 
 All five raw files are loaded independently with Pandas — **nothing is joined or combined** at this stage:
 
@@ -123,7 +123,7 @@ Full notebook: [`notebook/01_load_raw_data.ipynb`](./notebook/01_load_raw_data.i
 
 ---
 
-## ✅ Task 8 — Ingestion Summary
+## Task 8 — Ingestion Summary
 
 | Source | Expected Records | Loaded Records | Columns | Status |
 |---|---|---|---|---|
@@ -137,7 +137,7 @@ All five sources ingested cleanly with `df.shape`, `df.head()`, and `df.info()` 
 
 ---
 
-## 🔍 Task 9 — Basic Schema Validation
+## Task 9 — Basic Schema Validation
 
 A small `SchemaValidator` class checks each source's structure — required columns present, primary key present with no nulls/duplicates, and expected vs. actual Pandas dtype. **No values are cleaned or modified at this stage.**
 
@@ -165,7 +165,7 @@ Every other field matched its expected type exactly. **These date/timestamp mism
 
 ---
 
-## 🗄️ Task 10 — Staging Layer
+## Task 10 — Staging Layer
 
 After ingestion and validation, an untouched copy of each source is written to `staging/`:
 
@@ -188,7 +188,7 @@ flowchart LR
 
 ---
 
-## 💭 Short Reflection
+## Short Reflection
 
 **1. Why is it important for a Data Engineer to understand the business scenario before writing the pipeline?**
 It is incredibly important for a Data Engineer to understand the business scenario before writing the pipeline, because if the Data Engineer does not know what he is building the pipeline for, there may be business logic errors. This means that yes, the code runs, but the ingested and staged data is not prepared for the business to answer its problems or questions.
@@ -207,7 +207,7 @@ A potential problem I would expect when combining is inconsistent and missing co
 
 ---
 
-## 📊 Phase 1 Deliverables Checklist
+## Phase 1 Deliverables Checklist
 
 - [x] Business requirement analysis
 - [x] Source-system identification table
@@ -221,4 +221,3 @@ A potential problem I would expect when combining is inconsistent and missing co
 - [x] Basic schema validation
 - [x] Five staging datasets (`staging/stg_*.csv`)
 
-**Phase 1 completion check:** the data's origin, structure, and relationships are documented above, and the notebook moves all five raw sources into a staging layer. No final integrated analytics dataset exists yet — that's Phase 2.
