@@ -1,0 +1,19 @@
+Category,Check,Detail,Affected Rows,Status / Action
+Referential Integrity (Task 3),vehicle_id -> vehicle_id,trips.vehicle_id -> vehicles.vehicle_id,0,No orphan foreign keys found
+Referential Integrity (Task 3),route_id -> route_id,trips.route_id -> routes.route_id,0,No orphan foreign keys found
+Referential Integrity (Task 3),trip_id -> trip_id,passenger_transactions.trip_id -> trips.trip_id,0,No orphan foreign keys found
+Referential Integrity (Task 3),vehicle_id -> vehicle_id,maintenance.vehicle_id -> vehicles.vehicle_id,0,No orphan foreign keys found
+Integration Validation (Task 5),trip_id uniqueness at trip grain,,0,No issues found
+Integration Validation (Task 5),Missing values introduced in route_name after join,,0,No issues found
+Integration Validation (Task 5),Missing values introduced in origin after join,,0,No issues found
+Integration Validation (Task 5),Missing values introduced in destination after join,,0,No issues found
+Integration Validation (Task 5),Missing values introduced in distance_km after join,,0,No issues found
+Integration Validation (Task 5),Missing values introduced in license_plate after join,,0,No issues found
+Integration Validation (Task 5),Missing values introduced in model after join,,0,No issues found
+Integration Validation (Task 5),Missing values introduced in manufacture_year after join,,0,No issues found
+Integration Validation (Task 5),Missing values introduced in vehicle_status after join,,0,No issues found
+Integration Validation (Task 5),actual_duration_minutes < 0,,0,No issues found
+Integration Validation (Task 5),delay_minutes computed but actual_duration_minutes is null,,0,No issues found
+Integration Validation (Task 5),fare_revenue < 0,,0,No issues found
+Integration Validation (Task 5),passenger_count < 0,,0,No issues found
+Integration Validation (Task 5),utilization_pct < 0,,0,No issues found

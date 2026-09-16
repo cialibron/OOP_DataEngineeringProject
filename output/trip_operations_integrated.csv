@@ -1,0 +1,16 @@
+trip_id,route_id,route_name,origin,destination,distance_km,expected_duration_min,vehicle_id,license_plate,model,manufacture_year,capacity,vehicle_status,scheduled_start_time,actual_start_time,actual_end_time,status,passenger_count,fare_revenue,actual_duration_minutes,delay_minutes,utilization_pct
+T1001,R01,Downtown Express,Central Station,North Hub,18.5,45,V101,BUS-7890,Volvo B7R,2019,50,Active,2026-03-01 07:00:00,2026-03-01 07:02:00,2026-03-01 07:55:00,Completed,2,5.5,53.0,8.0,4.0
+T1002,R01,Downtown Express,Central Station,North Hub,18.5,45,V102,BUS-7891,Volvo B7R,2020,50,Active,2026-03-01 08:00:00,2026-03-01 08:05:00,2026-03-01 09:05:00,Completed,1,2.75,60.0,15.0,2.0
+T1003,R02,Crosstown Shuttle,East Mall,West Tech Park,24.0,60,V104,BUS-1209,Scania K320,2018,60,Active,2026-03-01 07:30:00,2026-03-01 07:30:00,2026-03-01 08:45:00,Completed,1,3.5,75.0,15.0,1.6666666666666667
+T1004,R03,Airport Connector,Central Station,Airport Terminal 1,32.0,50,V103,BUS-4521,BYD K9,2021,40,Under Maintenance,2026-03-01 09:00:00,2026-03-01 09:15:00,2026-03-01 10:20:00,Completed,1,5.0,65.0,15.0,2.5
+T1005,R04,University Line,South Metro,State University,12.2,30,V105,BUS-3310,BYD K9,2022,40,Active,2026-03-01 08:15:00,2026-03-01 08:15:00,2026-03-01 08:43:00,Completed,1,2.25,28.0,-2.0,2.5
+T1006,R05,Harbor Commuter,Port Terminal,Central Station,15.0,35,V106,BUS-5542,Volvo B7R,2021,50,Active,2026-03-01 06:45:00,2026-03-01 06:45:00,2026-03-01 07:22:00,Completed,1,2.5,37.0,2.0,2.0
+T1007,R06,Westside Feeder,West Tech Park,Suburban Ring,8.5,20,V107,BUS-8812,Scania K320,2019,60,Active,2026-03-01 07:15:00,2026-03-01 07:20:00,2026-03-01 07:42:00,Completed,1,2.0,22.0,2.0,1.6666666666666667
+T1008,R07,Night Owl Circulator,Downtown Core,City Limits,28.0,55,V108,BUS-9901,Mercedes Citaro,2017,55,Out of Service,2026-03-01 23:00:00,,,Cancelled,0,0.0,,,0.0
+T1009,R08,Medical Center Direct,North Hub,General Hospital,10.4,25,V109,BUS-2234,BYD K9,2023,40,Active,2026-03-01 08:30:00,2026-03-01 08:31:00,2026-03-01 08:58:00,Completed,1,2.25,27.0,2.0,2.5
+T1010,R09,Tech Corridor,East Mall,Innovation Park,16.8,40,V110,BUS-6678,Volvo B7R,2020,50,Active,2026-03-01 09:10:00,2026-03-01 09:12:00,2026-03-01 09:55:00,Completed,1,3.0,43.0,3.0,2.0
+T1011,R10,Southside Local,South Metro,Old Town,9.2,22,V111,BUS-1123,Scania K320,2021,60,Active,2026-03-01 10:00:00,2026-03-01 10:01:00,2026-03-01 10:24:00,Completed,1,2.0,23.0,1.0,1.6666666666666667
+T1012,R11,Riverfront Shuttle,Port Terminal,Cultural Center,6.5,15,V112,BUS-4455,Mercedes Citaro,2022,55,Active,2026-03-01 11:15:00,2026-03-01 11:15:00,2026-03-01 11:32:00,Completed,1,1.75,17.0,2.0,1.8181818181818181
+T1013,R12,Metro Loop,Central Station,Central Station,22.1,50,V114,BUS-3344,Volvo B7R,2023,50,Active,2026-03-01 12:00:00,2026-03-01 12:08:00,2026-03-01 13:05:00,Completed,1,3.25,57.0,7.0,2.0
+T1014,R13,Suburb Rapid,City Limits,North Hub,35.5,65,V115,BUS-9988,Scania K320,2019,60,Active,2026-03-01 13:30:00,2026-03-01 13:30:00,2026-03-01 14:40:00,Completed,1,4.5,70.0,5.0,1.6666666666666667
+T1015,R14,Campus Express,State University,Innovation Park,11.0,28,V101,BUS-7890,Volvo B7R,2019,50,Active,2026-03-01 14:15:00,2026-03-01 14:18:00,2026-03-01 14:48:00,Completed,1,2.25,30.0,2.0,2.0
