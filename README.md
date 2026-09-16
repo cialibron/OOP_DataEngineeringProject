@@ -411,4 +411,3 @@ I would automate the referential-integrity checks from Task 3, the `ForeignKeyVa
 - [x] Original raw and staging files retained unchanged
 - [x] Short reflection
 
-**Phase 2 completion check:** `trip_operations_integrated.csv` is one row per trip with route, vehicle, passenger, revenue, duration, delay, and utilization fields; `vehicle_maintenance_summary.csv` summarizes maintenance at the vehicle grain; and `data_quality_report.csv` documents every key, integrity, and validation check performed — with zero unresolved issues found.
