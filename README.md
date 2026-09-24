@@ -623,38 +623,34 @@ OOP_DataEngineeringProject/
 
 ---
 
-## Short Reflection — Phase 3
+## Short Reflection - Phase 3
 
 **1. Why did your project require more than one grain or more than one fact table?**
-Trips and maintenance events happen at different frequencies and describe different things —
-a trip is one scheduled movement of one vehicle, a maintenance record is one service event
-for a vehicle that can occur any number of times, independent of how many trips that vehicle
+
+It is because trips and maintenance events happen at different frequencies and describe different things.
+A trip is one scheduled movement of one vehicle, a maintenance record is one service event
+for a vehicle that can occur any number of times which is independent of how many trips that vehicle
 ran. Forcing both into a single trip-grain table would mean either dropping maintenance
-history that doesn't line up with a specific trip, or repeating (and effectively multiplying)
-maintenance cost across every trip that vehicle happens to make. Two fact tables —
-`fact_trip` and `fact_maintenance` — each stay at the grain their own source events actually
-occur at.
+history that doesn't line up with a specific trip, or repeating maintenance cost across every trip that vehicle happens to make. 
 
 **2. Which reconciliation check gives you the most confidence that the curated layer is correct?**
-The passenger/fare reconciliation against the Activity 2 trip-level output. It compares
-totals for the two measures the whole mart exists to report on, computed two different ways
-(Activity 2's integration logic vs. Phase 3's straight re-projection into `fact_trip`), so any
-silent row loss, duplication, or mis-join anywhere upstream of `fact_trip` would show up
-immediately as a mismatch.
+
+The reconciliation check that gives me the most confidence is the passenger/fare reconciliation against the Activity 2 trip-level output. 
+This is because it compares totals for the two measures the whole mart exists to report on, so any silent row loss, duplication, or
+mis-join anywhere upstream of `fact_trip` would show up immediately as a mismatch.
 
 **3. What measure would be easiest to double-count if the data mart were designed incorrectly?**
-`maintenance cost`. Because one vehicle can have many trips and many maintenance events, a
-naive join of `fact_trip` to maintenance records on `vehicle_id` produces one row per
-(trip × maintenance event) pair for that vehicle — summing `cost` over that join multiplies
-the true cost by however many trips the vehicle happened to run. This is exactly what the
-`check_maintenance_cost_not_multiplied` check in Task 4 guards against.
+
+It would be `maintenance cost`. This is because there is a relationship where one vehicle can have many trips and many maintenance events, 
+a "mis"-join of `fact_trip` to maintenance records on `vehicle_id` produces one row per pair for that vehicle. This is exactly what
+`check_maintenance_cost_not_multiplied` in Task 4 ensures, by requiring `vehicle_utilization_summary.maintenance_cost` to match a maintenance-only groupby rather
+than anything derived from a trip join.
 
 **4. If this pipeline ran daily, which step would you automate or monitor first?**
-The Task 4 quality checks — specifically the foreign-key checks and the passenger/fare
-reconciliation. Those are the checks most likely to catch a real upstream problem (a vehicle
-retired without updating `dim_vehicle`, a route renamed inconsistently, a duplicated
-extraction from `passenger_transactions`) before it reaches management-facing summaries, and
-they're cheap to run automatically on every load with no manual judgment required.
+
+Arguably, the most important step here which should be automated first is the Task 4 quality checks, specifically, the foreign-key checks and the passenger/fare
+reconciliation. Those are the checks most likely to catch a real problem before it reaches management-facing summaries. Additionaly, they're cheap to 
+run automatically on every load with no manual judgment required, so from a business point of view, it is very practical.
 
 ---
 
