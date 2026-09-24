@@ -1,0 +1,5 @@
+Measure Reconciled,Activity 2 Total,Phase 3 Total,Difference,Explanation
+Total trip count,15.0,15.0,0.0,"fact_trip is a direct, unfiltered re-projection of trip_operations_integrated at the same trip_id grain, so row counts match exactly."
+Total fare revenue,42.5,42.5,0.0,fare_revenue is carried over unchanged from Activity 2; no re-aggregation happens before this total.
+Total passenger count,15.0,15.0,0.0,passenger_count is carried over unchanged from Activity 2 for the same reason as fare_revenue.
+Total maintenance cost,7175.0,7175.0,0.0,"Both totals are ultimately sums over the same stg_maintenance records - vehicle_maintenance_summary rolls them up by vehicle first, fact_maintenance keeps them at event grain, but the grand total of cost is identical either way."

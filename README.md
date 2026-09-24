@@ -411,3 +411,264 @@ I would automate the referential-integrity checks from Task 3, the `ForeignKeyVa
 - [x] Original raw and staging files retained unchanged
 - [x] Short reflection
 
+
+---
+
+# Phase 3 — Analytics / Data-Mart Layer
+
+**Data Engineer Track — Midterm Activity 3 — Phase 3**
+**Author:** Libron, Christian Isaac Andas
+**Date:** September 22, 2026
+
+## Business Scenario — Phase 3
+
+Trip operations are already integrated with vehicle/route information, and maintenance
+history is preserved separately. Phase 3 organizes these outputs into a small **reporting
+mart** that supports route demand, trip performance, fare revenue, vehicle utilization, and
+maintenance monitoring — without mixing incompatible grains. This is the final technical
+build before the formal project document: not a dashboard, but a clean, documented analytics
+layer other users can trust.
+
+## Phase 3 Objectives
+
+- Design a small analytics/data-mart layer from the validated Activity 2 outputs
+- Separate facts and dimensions according to their correct grain
+- Preserve one-to-many relationships without double-counting measures
+- Create reusable pipeline functions with clearly organized transformation steps
+- Implement automated validation/reconciliation checks
+- Produce management-ready summary tables from the curated layer
+- Document simple data lineage from staging to final outputs
+- Save final curated datasets that can support the project report
+
+## Inputs Continued From Phase 2
+
+| Input | Purpose |
+|---|---|
+| `trip_operations_integrated.csv` | Activity 2 trip-level integrated output |
+| `vehicle_maintenance_summary.csv` | Activity 2 vehicle maintenance summary |
+| `stg_vehicles.csv` | Vehicle master |
+| `stg_routes.csv` | Route master |
+| `stg_maintenance.csv` | Maintenance records at service-event grain |
+
+---
+
+## Task 1 — Recheck Phase 2 Outputs
+
+All five inputs above are reloaded (Activity 1 raw files and Activity 2 outputs are never
+modified) and rechecked with an `InputRecheck` class — row counts, primary-key nulls/
+duplicates, expected columns, and critical-column nulls. All five came back clean.
+
+**Intended grain of every input, recorded before building anything on top of it:**
+
+| Input | Grain |
+|---|---|
+| `trip_operations_integrated.csv` | One row per `trip_id` |
+| `vehicle_maintenance_summary.csv` | One row per `vehicle_id` |
+| `stg_vehicles.csv` | One row per `vehicle_id` |
+| `stg_routes.csv` | One row per `route_id` |
+| `stg_maintenance.csv` | One row per `maintenance_id` (a vehicle can have many) |
+
+---
+
+## Task 2 — Design the Analytics Layer
+
+Two dimensions hold descriptive attributes once each; two facts hold measures at their own
+grain and reference the dimensions by key. `fact_trip` and `fact_maintenance` never join
+directly to each other — both only join *out* to `dim_vehicle` (and `fact_trip` also to
+`dim_route`) — which is what keeps the trip grain and the maintenance-event grain from ever
+being multiplied together.
+
+| Curated Table | Grain / Purpose |
+|---|---|
+| `dim_vehicle.csv` | One row per `vehicle_id` |
+| `dim_route.csv` | One row per `route_id` |
+| `fact_trip.csv` | One row per `trip_id` — route/vehicle keys, duration, passenger count, fare revenue, delay/utilization fields |
+| `fact_maintenance.csv` | One row per `maintenance_id` — vehicle key, service date, service type, cost, status |
+
+**Note on `odometer`:** the assignment's required grain for `fact_maintenance` lists an
+`odometer` field, but no odometer reading exists anywhere in the raw/staging source data.
+Rather than fabricate a value, `fact_maintenance` omits it — this gap is flagged for the
+source system rather than silently invented.
+
+### Star-schema diagram
+
+![Star schema diagram](diagrams/star_schema_diagram.png)
+
+---
+
+## Task 3 — Reusable Transformation Steps
+
+Each dimension/fact is built by its own small function — `build_dim_vehicle`,
+`build_dim_route`, `build_fact_trip`, `build_fact_maintenance` — with explicit join keys and
+consistent naming, following the same *load → validate → transform → aggregate → save*
+structure used in the Phase 2 notebook. Curated outputs are saved to a new `curated/` folder,
+kept separate from `raw/`, `staging/`, and the Phase 2 `output/` folder.
+
+---
+
+## Task 4 — Automated Data-Quality Checks
+
+A `QualityCheck` class wraps any check function into a PASS/FAIL row with an affected-row
+count, saved as `phase3_quality_report.csv`.
+
+| Check | Affected Rows | Status |
+|---|---|---|
+| `fact_trip.vehicle_id` exists in `dim_vehicle` | 0 | ✅ PASS |
+| `fact_trip.route_id` exists in `dim_route` | 0 | ✅ PASS |
+| `fact_maintenance.vehicle_id` exists in `dim_vehicle` | 0 | ✅ PASS |
+| `trip_id` unique in `fact_trip` | 0 | ✅ PASS |
+| `maintenance_id` unique in `fact_maintenance` | 0 | ✅ PASS |
+| Passenger/fare aggregates reconcile with Activity 2 trip-level output | 0 | ✅ PASS |
+| Maintenance cost not multiplied by trip joins | 0 | ✅ PASS |
+
+The last check is the one most specific to star-schema design: it guards against the classic
+bug of joining a per-event fact (maintenance) onto a per-trip fact and summing cost, which
+would multiply the true cost by however many trips that vehicle happened to run. It compares
+`vehicle_utilization_summary.maintenance_cost` against a maintenance-only groupby computed
+independently of any trip join.
+
+---
+
+## Task 5 — Management-Ready Summary Tables
+
+Each summary is generated purely from the curated `dim_*`/`fact_*` layer through code.
+
+| Summary | Purpose |
+|---|---|
+| `route_performance_summary.csv` | Trips, passengers, fare revenue, average duration, and delay rate by route |
+| `vehicle_utilization_summary.csv` | Trips, passengers carried, utilization measure(s), and maintenance cost by vehicle |
+| `daily_revenue_summary.csv` | Fare revenue and passenger transactions by trip date |
+
+Both summaries start from the full dimension (`dim_route`/`dim_vehicle`) rather than only the
+routes/vehicles that happen to appear in the facts, so a route or vehicle with zero activity
+still shows up with `0`s instead of silently disappearing. Two real examples this surfaced:
+**R15 (Stadium Shuttle)** has zero trips in this batch, and **V113** has maintenance history
+but no completed trips.
+
+---
+
+## Task 6 — Reconcile the Curated Layer
+
+| Measure Reconciled | Activity 2 Total | Phase 3 Total | Difference | Explanation |
+|---|---|---|---|---|
+| Total trip count | 15 | 15 | 0 | `fact_trip` is a direct, unfiltered re-projection of `trip_operations_integrated` at the same `trip_id` grain |
+| Total fare revenue | 42.5 | 42.5 | 0 | `fare_revenue` is carried over unchanged from Activity 2; no re-aggregation happens before this total |
+| Total passenger count | 15 | 15 | 0 | `passenger_count` is carried over unchanged from Activity 2 for the same reason as fare revenue |
+| Total maintenance cost | 7175.0 | 7175.0 | 0 | Both totals sum the same `stg_maintenance` records — `vehicle_maintenance_summary` rolls them up by vehicle first, `fact_maintenance` keeps event grain, but the grand total is identical either way |
+
+---
+
+## Task 7 — Final Business Checks
+
+**1. Which routes carry the most passengers and generate the most fare revenue?**
+`R13` Suburb Rapid leads on fare revenue thanks to its long distance; most routes tie on
+passenger count since each ran only one trip in this batch — with more days of data this
+comparison will separate real demand leaders from one-off trips.
+
+**2. Which routes or trips show the highest delay frequency or excess duration?**
+Every completed trip ran on a route with only one trip, so `delay_rate_pct` is either 0% or
+100% per route. Trip `T1002` on `R01` has the single largest individual delay (15 minutes
+over its 45-minute expected duration).
+
+**3. Which vehicles combine high utilization with repeated or costly maintenance?**
+`V108` has the highest maintenance cost (an in-progress engine failure plus a completed
+electrical repair) but zero trips this batch since its trip was cancelled — a maintenance
+risk to watch even though it isn't currently utilized. `V103` has the most repeated
+maintenance events (3) while shown mid-trip as `Under Maintenance`.
+
+---
+
+## Task 8 — Data Lineage
+
+![Data lineage diagram](diagrams/data_lineage_diagram.png)
+
+```mermaid
+flowchart LR
+    A[Raw] --> B[Staging]
+    B --> C[Activity 2 Integrated Output]
+    C --> D[Curated Facts / Dimensions]
+    D --> E[Reporting Summaries]
+```
+
+---
+
+## Final Project Structure
+
+```
+OOP_DataEngineeringProject/
+├── raw/                                # Activity 1 - untouched
+├── staging/                            # Activity 1 - untouched
+├── output/                             # Activity 2 outputs - untouched
+│   ├── trip_operations_integrated.csv
+│   ├── vehicle_maintenance_summary.csv
+│   └── data_quality_report.csv
+├── curated/                            # Phase 3 - data-mart layer
+│   ├── dim_vehicle.csv
+│   ├── dim_route.csv
+│   ├── fact_trip.csv
+│   ├── fact_maintenance.csv
+│   ├── route_performance_summary.csv
+│   ├── vehicle_utilization_summary.csv
+│   ├── daily_revenue_summary.csv
+│   ├── phase3_quality_report.csv
+│   └── reconciliation_report.csv
+├── diagrams/                           # Phase 3 - star schema + lineage
+│   ├── star_schema_diagram.png
+│   └── data_lineage_diagram.png
+├── notebook/
+│   ├── 01_data_pipeline.ipynb          # Phase 1 + Phase 2
+│   └── 02_data_mart.ipynb              # Phase 3
+└── README.md
+```
+
+---
+
+## Short Reflection — Phase 3
+
+**1. Why did your project require more than one grain or more than one fact table?**
+Trips and maintenance events happen at different frequencies and describe different things —
+a trip is one scheduled movement of one vehicle, a maintenance record is one service event
+for a vehicle that can occur any number of times, independent of how many trips that vehicle
+ran. Forcing both into a single trip-grain table would mean either dropping maintenance
+history that doesn't line up with a specific trip, or repeating (and effectively multiplying)
+maintenance cost across every trip that vehicle happens to make. Two fact tables —
+`fact_trip` and `fact_maintenance` — each stay at the grain their own source events actually
+occur at.
+
+**2. Which reconciliation check gives you the most confidence that the curated layer is correct?**
+The passenger/fare reconciliation against the Activity 2 trip-level output. It compares
+totals for the two measures the whole mart exists to report on, computed two different ways
+(Activity 2's integration logic vs. Phase 3's straight re-projection into `fact_trip`), so any
+silent row loss, duplication, or mis-join anywhere upstream of `fact_trip` would show up
+immediately as a mismatch.
+
+**3. What measure would be easiest to double-count if the data mart were designed incorrectly?**
+`maintenance cost`. Because one vehicle can have many trips and many maintenance events, a
+naive join of `fact_trip` to maintenance records on `vehicle_id` produces one row per
+(trip × maintenance event) pair for that vehicle — summing `cost` over that join multiplies
+the true cost by however many trips the vehicle happened to run. This is exactly what the
+`check_maintenance_cost_not_multiplied` check in Task 4 guards against.
+
+**4. If this pipeline ran daily, which step would you automate or monitor first?**
+The Task 4 quality checks — specifically the foreign-key checks and the passenger/fare
+reconciliation. Those are the checks most likely to catch a real upstream problem (a vehicle
+retired without updating `dim_vehicle`, a route renamed inconsistently, a duplicated
+extraction from `passenger_transactions`) before it reaches management-facing summaries, and
+they're cheap to run automatically on every load with no manual judgment required.
+
+---
+
+## Phase 3 Deliverables Checklist
+
+- [x] Activity 2 outputs and staging inputs rechecked (row counts, keys, nulls, grain)
+- [x] Star-schema data-mart design (`dim_vehicle`, `dim_route`, `fact_trip`, `fact_maintenance`)
+- [x] Reusable transformation functions, clearly separated by stage
+- [x] Automated data-quality checks (`phase3_quality_report.csv`, 7 checks, 0 failures)
+- [x] Management-ready summary tables (route, vehicle, daily revenue)
+- [x] Reconciliation against Activity 2 totals (4 measures, 0 differences)
+- [x] Star-schema diagram (`diagrams/star_schema_diagram.png`)
+- [x] Data-lineage diagram (`diagrams/data_lineage_diagram.png`)
+- [x] Business-check results with interpretation
+- [x] Curated outputs saved to `curated/`, separate from `raw/`/`staging/`/`output/`
+- [x] Original raw, staging, and Activity 2 output files retained unchanged
+- [x] Short reflection

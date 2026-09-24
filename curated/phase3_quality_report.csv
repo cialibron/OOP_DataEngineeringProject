@@ -1,0 +1,8 @@
+Check,Affected Rows,Status,Action / Note
+fact_trip.vehicle_id exists in dim_vehicle,0,PASS,No orphan foreign keys found
+fact_trip.route_id exists in dim_route,0,PASS,No orphan foreign keys found
+fact_maintenance.vehicle_id exists in dim_vehicle,0,PASS,No orphan foreign keys found
+trip_id unique in fact_trip,0,PASS,trip_id is unique in fact_trip
+maintenance_id unique in fact_maintenance,0,PASS,maintenance_id is unique in fact_maintenance
+passenger/fare aggregates reconcile with Activity 2 trip-level output,0,PASS,passengers: mart=15 vs Activity2=15; fare_revenue: mart=42.5 vs Activity2=42.5
+maintenance cost not multiplied by trip joins,0,PASS,vehicle_utilization_summary.maintenance_cost matches maintenance grouped independently by vehicle_id (not inflated by trip count)
